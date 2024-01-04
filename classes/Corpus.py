@@ -40,13 +40,14 @@ class Corpus:
      # =============== 3.3 : SAVE ===============
     def save(self, filename='corpus.csv'):
         # Sauvegarder le corpus dans un fichier CSV
-        data = {'ID': [], 'Titre': [], 'Auteur': [], 'Date': [], 'Texte': []}
+        data = {'ID': [], 'Titre': [], 'Auteur': [], 'Date': [], 'Texte': [], 'Type' : []}
         for doc_id, doc in self.id2doc.items():
             data['ID'].append(doc_id)
             data['Titre'].append(doc.titre)
             data['Auteur'].append(doc.auteur)
             data['Date'].append(doc.date)
             data['Texte'].append(doc.texte)
+            data['Type'].append(doc.type)
 
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
@@ -56,7 +57,7 @@ class Corpus:
         # Charger le corpus depuis un fichier CSV
         df = pd.read_csv(filename)
         for i, row in df.iterrows():
-            doc = Document(row['Titre'], row['Auteur'], row['Date'], '', row['Texte'])
+            doc = Document(row['Titre'], row['Auteur'], row['Date'], row['Texte'], row['Type'])
             self.add(doc)
 
 # =============== 2.8 : REPRESENTATION ===============

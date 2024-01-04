@@ -1,22 +1,25 @@
 import praw
 from classes.Document import Document 
 from classes.Author import Author
+from classes.Corpus import Corpus
+from classes.Document import RedditDocument, ArxivDocument
 import datetime 
 import pandas as pd 
 import urllib.request
 import xmltodict
-#=========================== PArtie 1 Document ===========
+#===========================  Document ===========
 # ============================= chargement de données reddit en instanciant un objet document
 reddit = praw.Reddit(client_id='_jjmAvQmLvyPWeH7mSTYrw', client_secret='j7vF0wxXN9VuvOrIri3dt3W4fSvH4w', user_agent='td3')
-subr = reddit.subreddit('Football')
+theme = 'Football'
+subr = reddit.subreddit(theme)
 
-textes_Reddit = []
+#textes_Reddit = []
 collection = []
 
 # Utilisez la fonction dir() pour voir tous les champs de l'objet subr
-print(dir(subr))
-
-for doc in subr.controversial(limit=50):
+#print(dir(subr))
+limit=0
+for doc in subr.controversial(limit=limit):
     titre = doc.title.replace("\n", '')
     auteur = str(doc.author)
     date = datetime.datetime.fromtimestamp(doc.created).strftime("%Y/%m/%d")
@@ -28,10 +31,8 @@ for doc in subr.controversial(limit=50):
 
 # ...
 
-#_____________________chargement des données Arxiv en instanciant un objet docyment
-
-
-textes_arxiv=[]
+#==========================chargement des données Arxiv en instanciant un objet docyment
+#textes_arxiv=[]
 query = "foot"
 url = 'http://export.arxiv.org/api/query?search_query=all:' + query + '&start=0&max_results=100'
 url_read = urllib.request.urlopen(url).read()
@@ -53,7 +54,7 @@ for doc in docs:
     doc_class = Document(titre, authors, date, doc["id"], summary)  # Création du Document
     collection.append(doc_class)  # Ajout du Document à la liste.
 
-print(len(collection))
+#print(len(collection))
 #del(collection)
 
 
@@ -81,7 +82,7 @@ for doc in collection:
 print(id2aut)
 
 
-#================ code necessaire pour afficher les stat d'un auteur  je sais pas si on l'a met dans la classe ou directement ici 
+#================ code necessaire pour afficher les stat d'un auteur  
 def statistiques_auteur():
     nom_auteur = input("Entrez le nom de l'auteur : ")
 
@@ -98,35 +99,16 @@ def statistiques_auteur():
     else:
         print(f"L'auteur {nom_auteur} n'est pas connu dans la collection.\n")
 
-# Exemple d'utilisation
-statistiques_auteur()
+# Appel de la fonction
+#statistiques_auteur()
 
 
-###================================= partie 3 Classe corpus
-
-#Créez un DataFrame à partir des objets Document
-from classes.Corpus import Corpus
-
-# Créez une instance de la classe Corpus
-mon_corpus = Corpus(nom="Corpus_article")
-
-
-# Sauvegardez le corpus dans un fichier CSV
-mon_corpus.save("corpus.csv")
-
-# Chargez le corpus depuis un fichier CSV
-mon_corpus.load('corpus.csv')
-print(repr(mon_corpus ))
-del(mon_corpus)
-
+###=================================  Classe corpus   =======================
+#del(mon_corpus)
 ####====================== test des classes filles documents
-from classes.Document import RedditDocument, ArxivDocument
-
 # Création du corpus
 mon_corpus = Corpus(nom="Corpus_article")
-# Ajoutez les documents à votre instance de Corpus
-del(mon_corpus)
-
+# Ajoutez les documents à l instance de Corpus
 for doc in collection:
     if "reddit" in doc.url.lower():
         # Créer un objet RedditDocument en utilisant les propriétés du document actuel
@@ -150,23 +132,33 @@ for doc in collection:
             date=doc.date,
             url=doc.url,
             texte=doc.texte,
-       
             
         )
         doc.type = "Arxiv"
         mon_corpus.add(doc)
-# Affichage du corpus
-# Après avoir ajouté tous les documents à votre corpus
+
+# Taille du corpus 
 taille_corpus = mon_corpus.ndoc
 print(f"Taille du corpus : {taille_corpus} documents")
 
-# Remplissez le champ type
+# Affichage du corpus
 mon_corpus.show()
 
 
-#Test de notre singleton 
-corpus1 = Corpus("Corpus1")
-corpus2 = Corpus("Corpus2")
-corpus3 = Corpus("Corpus3")
+#========================Créez un DataFrame à partir des objets Document ===================
+# Créez une instance de la classe Corpus
+mon_corpus = Corpus(nom="Corpus_article")
 
-print(corpus1 is corpus2 is corpus3)
+# Sauvegardez le corpus dans un fichier CSV
+mon_corpus.save("corpus.csv")
+
+# Chargez le corpus depuis un fichier CSV
+mon_corpus.load('corpus.csv')
+print(repr(mon_corpus ))
+
+#Test de notre singleton 
+#corpus1 = Corpus("Corpus1")
+#corpus2 = Corpus("Corpus2")
+#corpus3 = Corpus("Corpus3")
+
+#print(corpus1 is corpus2 is corpus3)
