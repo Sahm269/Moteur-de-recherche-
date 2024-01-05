@@ -18,6 +18,7 @@ class Document:
     def __str__(self):
         return f"{self.titre}, par {self.auteur}, Source : {self.type}"
     
+
    
 # =============== 2.3 : Classe fille RedditDocument ===============
 class RedditDocument(Document):
