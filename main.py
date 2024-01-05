@@ -20,7 +20,7 @@ collection = []
 
 # Utilisez la fonction dir() pour voir tous les champs de l'objet subr
 #print(dir(subr))
-limit=100
+limit=10
 for doc in subr.controversial(limit=limit):
     titre = doc.title.replace("\n", '')
     auteur = str(doc.author)
@@ -36,7 +36,7 @@ for doc in subr.controversial(limit=limit):
 #==========================chargement des données Arxiv en instanciant un objet docyment
 #textes_arxiv=[]
 query = "foot"
-url = 'http://export.arxiv.org/api/query?search_query=all:' + query + '&start=0&max_results=100'
+url = 'http://export.arxiv.org/api/query?search_query=all:' + query + '&start=0&max_results=10'
 url_read = urllib.request.urlopen(url).read()
 
 # url_read est un "byte stream" qui a besoin d'être décodé
@@ -251,7 +251,7 @@ for doc_id, passage in passages.items():
     #print(f"Document ID: {doc_id}")
     #print(f"Passage: {passage}\n")
 # Methode recherche cosinus 
-mots_clefs_utilisateur = 'we are interested to the zygodactyly' #demand eà l'utilisateur de mettre un mot 
+mots_clefs_utilisateur = 'cumulative footpressure images as a biometric.' #demand eà l'utilisateur de mettre un mot 
  #transforme les mots cles en vecteur vecteur_requete = np.zeros(len(self.vocabulaire))
 vecteur_requete = np.zeros(len(vocab))
 
@@ -261,7 +261,7 @@ for mot in mots_clefs_propres.split():
         mot_id = vocab[mot]['id'] - 1
         vecteur_requete[mot_id] += 1
 
-#calcule la similarité
+#calcule la similarité6
 
 
 mat_tfidf = mon_corpus.get_mattdidf()
