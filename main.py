@@ -207,9 +207,10 @@ moncorpus = Corpus('test')
 mon_corpus = Corpus('test')
 
 # Ajout de quelques documents à mon_corpus
-doc1 = Document("Title 1", "Author 1", "2023/01/01", "URL1", "This is an example of special text with line breaks and special special  characters like é, è, and ü. 122? mama 854!!! ?? zizi.")
-doc2 = Document("Title 2", "Author 2", "2023/02/02", "URL2", "Another example of text with words. mama ")
-doc3 = Document("Title 3", "Author 3", "2023/03/03", "URL3", "Yet another example to test the method.")
+doc1 = Document("Title 1", "Author 1", "2023/01/01", "URL1", "The present study focused on the effects of trunk extensor muscles fatigue onpostural control during quiet standing under different somatosensory conditionsfrom the foot and the ankle. With this aim, 20 young healthy adults were askedto stand as immobile as possible in two conditions of No fatigue and Fatigue oftrunk extensor muscles. In Experiment 1 (n = 10), somatosensation from the footand the ankle was degraded by standing on a foam surface. In Experiment 2 (n =10), somatosensation from the foot and ankle was facilitated through theincreased cutaneous feedback at the foot and ankle provided by strips ofathletic tape applied across both ankle joints. The centre of foot pressuredisplacements (CoP) were recorded using a force platform. The results showedthat (1) trunk extensor muscles fatigue increased CoP displacements undernormal somatosensatory conditions (Experiment 1 and Experiment 2), (2) thisdestabilizing effect was exacerbated when somatosensation from the foot and theankle was degraded (Experiment 1), and (3) this destabilizing effect wasmitigated when somatosensation from the foot and the ankle was facilitated(Experiment 2). Altogether, the present findings evidenced re-weighting ofsensory cues for controlling posture during quiet standing following trunkextensor muscles fatigue by increasing the reliance on the somatosensory inputsfrom the foot and the ankle. This could have implications in clinical andrehabilitative areas")
+doc2 = Document("Title 2", "Author 2", "2023/02/02", "URL2", "We propose a novel method for fitting planar B-spline curves to unorganizeddata points. In traditional methods, optimization of control points and footpoints are performed in two very time-consuming steps in each iteration: 1)control points are updated by setting up and solving a linear system ofequations; and 2) foot points are computed by projecting each data point onto aB-spline curve. Our method uses the L-BFGS optimization method to optimizecontrol points and foot points simultaneously and therefore it does not need toperform either matrix computation or foot point projection in every iteration.As a result, our method is much faster than existing methods.")
+doc3 = Document("Title 3", "Author 3", "2023/03/03", "URL3", "In this paper we are interested to the zygodactyly phenomenon in birds, andin particolar in parrots. This arrangement, common in species living on trees,is a distribution of the foot with two toes facing forward and two back. Wegive a model for the foot, and thanks to the methods of iterated functionsystem we are able to describe the reachability set. Moreover we give anecessary and sufficient condition for the grasping problem. Finally weintroduce a hybrid dynamical system modeling owl's foot in various stages ofhunting (flying, attack, grasp")
+
 mon_corpus.add(doc1)
 mon_corpus.add(doc2)
 mon_corpus.add(doc3)
@@ -250,7 +251,7 @@ for doc_id, passage in passages.items():
     #print(f"Document ID: {doc_id}")
     #print(f"Passage: {passage}\n")
 # Methode recherche cosinus 
-mots_clefs_utilisateur = 'another of words' #demand eà l'utilisateur de mettre un mot 
+mots_clefs_utilisateur = 'we are interested to the zygodactyly' #demand eà l'utilisateur de mettre un mot 
  #transforme les mots cles en vecteur vecteur_requete = np.zeros(len(self.vocabulaire))
 vecteur_requete = np.zeros(len(vocab))
 
