@@ -76,9 +76,18 @@ class Corpus:
     def load(self, filename='corpus.csv'):
         # Charger le corpus depuis un fichier CSV
         df = pd.read_csv(filename)
+
+        # Supprimer les doublons basés sur les colonnes spécifiées
+        df = df.drop_duplicates(subset=['Titre', 'Auteur', 'Date', 'Texte', 'Type'])
+
+        # Supprimer les lignes avec un texte de moins de 200 caractères
+        df = df[df['Texte'].apply(lambda x: len(str(x)) >= 200)]
+        print(len(df))
+
         for i, row in df.iterrows():
             doc = Document(row['Titre'], row['Auteur'], row['Date'], row['Texte'], row['Type'])
             self.add(doc)
+
 
 # =============== 2.8 : REPRESENTATION ===============
     def show(self, n_docs=-1, tri="abc"):
@@ -102,10 +111,12 @@ class Corpus:
 
 
 ## ===Methode search 
+    
+    
     def search(self, keyword):
         passages = {}
 
-       # Vérifier si la chaîne a déjà été construite
+        # Vérifier si la chaîne a déjà été construite
         if Corpus.full_text is None:
             # Construire la chaîne en concaténant l'intégralité des textes
             Corpus.full_text = " ".join([doc.texte for doc in self.id2doc.values()])
@@ -116,7 +127,10 @@ class Corpus:
         for match in matches:
             for doc_id, document in self.id2doc.items():
                 if match.start() < len(document.texte):
-                    passages[doc_id] = document.texte[max(0, match.start() - 50):min(len(document.texte), match.end() + 50)]
+                    debut_passage = max(0, match.start() - 50)
+                    fin_passage = min(len(document.texte), match.end() + 50)
+                    passage = document.texte[debut_passage:fin_passage]
+                    passages[doc_id] = passage
 
         return passages
     

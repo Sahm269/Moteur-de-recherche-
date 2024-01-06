@@ -195,14 +195,14 @@ moncorpus = Corpus('test')
 #moncorpus.add(doc2)
 
 # Appeler la méthode concorde avec une expression régulière
-#results = moncorpus.concorde(r'\bmot\b', context_size=20)
+results = mon_corpus.concorde(r'\bA Computational Model of Force within the Ligaments\b', context_size=20)
 
 # Afficher les résultats
-#for i in range(len(results['contexte_gauche'])):
- #   print(f"Contexte Gauche: {results['contexte_gauche'][i]}")
-  #  print(f"Motif Trouvé: {results['motif_trouve'][i]}")
-   # print(f"Contexte Droit: {results['contexte_droit'][i]}")
-    #print("=" * 50)
+for i in range(len(results['contexte_gauche'])):
+    print(f"Contexte Gauche: {results['contexte_gauche'][i]}")
+    print(f"Motif Trouvé: {results['motif_trouve'][i]}")
+    print(f"Contexte Droit: {results['contexte_droit'][i]}")
+    print("=" * 50)
 # ============================== test stat===========
 mon_corpus = Corpus('test')
 
@@ -232,7 +232,7 @@ print(vocab)
 
 #===============================Moteur de recherche test
 #================================Methode sarch
-mots_clefs_utilisateur = 'example of special ' #demand eà l'utilisateur de mettre un mot 
+mots_clefs_utilisateur = 'A Computational Model of Force within the Ligaments  ' #demand eà l'utilisateur de mettre un mot 
  #nettoie les mots clées 
 passages = mon_corpus.search(mots_clefs_utilisateur)
 
@@ -251,7 +251,7 @@ for doc_id, passage in passages.items():
     #print(f"Document ID: {doc_id}")
     #print(f"Passage: {passage}\n")
 # Methode recherche cosinus 
-mots_clefs_utilisateur = 'cumulative footpressure images as a biometric.' #demand eà l'utilisateur de mettre un mot 
+mots_clefs_utilisateur = 'In this paper we are interested to the zygodactyly' #demand eà l'utilisateur de mettre un mot 
  #transforme les mots cles en vecteur vecteur_requete = np.zeros(len(self.vocabulaire))
 vecteur_requete = np.zeros(len(vocab))
 
