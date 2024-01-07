@@ -66,7 +66,7 @@ class Corpus:
             data['Titre'].append(doc.titre)
             data['Auteur'].append(doc.auteur)
             data['Date'].append(doc.date)
-            data['URL'].append(doc.texte)
+            data['URL'].append(doc.url)
             data['Texte'].append(doc.texte)
             data['Type'].append(doc.type)
 
@@ -79,7 +79,7 @@ class Corpus:
         df = pd.read_csv(filename)
 
         # Supprimer les doublons basés sur les colonnes spécifiées
-        df = df.drop_duplicates(subset=['Titre', 'Auteur', 'Date', 'Texte', 'Type'])
+        df = df.drop_duplicates(subset=['Titre', 'Auteur', 'Date','URL', 'Texte','Type'])
 
         # Supprimer les lignes avec un texte de moins de 200 caractères
         df = df[df['Texte'].apply(lambda x: len(str(x)) >= 200)]

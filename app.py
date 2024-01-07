@@ -115,56 +115,61 @@ def display_page(pathname):
         return layout_accueil
 
 # Callback pour effectuer la recherche
+
 @app.callback(Output('output_recherche_cosinus', 'children'),
               [Input('bouton_recherche_cosinus', 'n_clicks')],
               [State('champ_recherche_cosinus', 'value')])
-
 def effectuer_recherche_cosinus(n_clicks, mots_clefs_utilisateur):
-    mon_corpus.construire_mat_tfidf()
-    vocab = mon_corpus.get_vocabulaire()
-    vecteur_requete = np.zeros(len(vocab))
-    
+    if n_clicks > 0:
 
-    mots_clefs_propres = mon_corpus.nettoyer_texte(mots_clefs_utilisateur)
-    for mot in mots_clefs_propres.split():
-        if mot in vocab:
-            mot_id = vocab[mot]['id'] - 1
-            vecteur_requete[mot_id] += 1
+        mon_corpus.load("corpus1.csv")
+        mon_corpus.construire_mat_tfidf()
+        vocab = mon_corpus.get_vocabulaire()
+        vecteur_requete = np.zeros(len(vocab))
 
-    #calcule la similarité
+        mots_clefs_propres = mon_corpus.nettoyer_texte(mots_clefs_utilisateur)
+        for mot in mots_clefs_propres.split():
+            if mot in vocab:
+                mot_id = vocab[mot]['id'] - 1
+                vecteur_requete[mot_id] += 1
 
-    mat_tfidf = mon_corpus.get_mattdidf()
-    similarites = cosine_similarity([vecteur_requete], mat_tfidf)
+        # Calcule la similarité
+        mat_tfidf = mon_corpus.get_mattdidf()
+        similarites = cosine_similarity([vecteur_requete], mat_tfidf)
 
-    indices_tries = np.argsort(similarites[0])[::-1]
-    id2doc = mon_corpus.get_id2doc()
-
+        indices_tries = np.argsort(similarites[0])[::-1]
+        id2doc = mon_corpus.get_id2doc()
 
         # Construire le contenu HTML
-    contenu_html = []
-    for i in range(10):
-        indice_document = indices_tries[i]
-        score_similarite = similarites[0, indice_document]
+        contenu_html = []
+        for i in range(10):
+            indice_document = indices_tries[i]
+            score_similarite = similarites[0, indice_document]
 
-        #  indexation
-        indice_document += 1
+            # Indexation
+            indice_document += 1
 
-        document = id2doc[indice_document]
+            document = id2doc.get(indice_document)  # Utilisez get pour éviter une KeyError
 
-        if document:
-            contenu_html.append(
-                html.Div([
-                    html.P(f"Score de similarité avec le document {document.titre} : {score_similarite}"),
-                    html.P(f"URL : {html.A(document.url, href=document.url, target='_blank')}"),
-                    html.P(f"Contenu du document : {document.texte}"),
-                    html.P(f"Auteur : {document.auteur}"),
-                    html.P(f"Date : {document.date}"),
-                    html.P(f"Type : {document.type}"),
-                    html.Hr(),
-                ])
-            )
+            if document:
+                contenu_html.append(
+                    html.Div([
+                        html.P(f"Score de similarité avec le document {document.titre} : {score_similarite}"),
+                        html.A(document.url, href=document.url, target='_blank'),
+                        html.P(f"Contenu du document : {document.texte}"),
+                        html.P(f"Auteur : {document.auteur}"),
+                        html.P(f"Date : {document.date}"),
+                        html.P(f"Type : {document.type}"),
+                        html.Hr(),
+                    ])
+                )
 
-    return contenu_html
+        return dcc.Loading(
+            id="loading-recherche-cosinus",
+            type="circle",
+            children=contenu_html,
+            style={'color': 'red'}
+        )
 
 
 # Callback pour gérer le clic sur le bouton de chargement
@@ -253,36 +258,38 @@ def load_data(n_clicks, theme_reddit, limit_reddit, idclient, secretclient, user
         return "" 
     
 
-    # Callbacks pour les boutons du corpus
-    @app.callback(Output('output_recherche_cosinus', 'children'),
-                [Input('show_corpus_button', 'n_clicks')])
-        def show_corpus(n_clicks):
-            if n_clicks>0 :
-                
+# Callbacks pour les boutons du corpus
+@app.callback(Output('result_output1', 'children'),
+            [Input('show_corpus_button', 'n_clicks')])
+def show_corpus(n_clicks):
+    if n_clicks>0:
+        mon_corpus.show() 
+        
 
-            # Logique pour afficher le corpus
-            # ...
+        # Logique pour afficher le corpus
+        # ...
 
-    # Ajoutez des callbacks similaires pour 'save_corpus_button' et 'open_corpus_button'
-    @app.callback(Output('output_recherche_cosinus', 'children'),
-                [Input('save_corpus_button', 'n_clicks')],
-                [State('loaded_data_store', 'data')])
-        def save_corpus(n_clicks, loaded_data):
-            if not loaded_data:
-                raise PreventUpdate
+# Ajoutez des callbacks similaires pour 'save_corpus_button' et 'open_corpus_button'
+@app.callback(Output('result_output2', 'children'),
+            [Input('save_corpus_button', 'n_clicks')])
+def save_corpus(n_clicks, loaded_data):
+    if n_clicks>0 :
+        mon_corpus.save() 
+        
 
-            # Logique pour enregistrer le corpus
-            # ...
 
-    @app.callback(Output('output_recherche_cosinus', 'children'),
-                [Input('open_corpus_button', 'n_clicks')],
-                [State('loaded_data_store', 'data')])
-        def open_corpus(n_clicks, loaded_data):
-            if not loaded_data:
-                raise PreventUpdate
+        # Logique pour enregistrer le corpus
+        # ...
 
-            # Logique pour ouvrir le corpus
-            # ...
+@app.callback(Output('result_output3', 'children'),
+            [Input('open_corpus_button', 'n_clicks')])
+def open_corpus(n_clicks, loaded_data):
+    if n_clicks>0 :
+        mon_corpus.load("corpus1.csv") 
+        
+
+        # Logique pour ouvrir le corpus
+        # ...
 
 
 
