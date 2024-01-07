@@ -191,7 +191,9 @@ class Corpus:
         mots = texte.split()
         
         mots = [mot for mot in mots if mot not in stop_words] 
-        mots = [mot for mot in mots if len(mot) >= 2] #on enleve qui on moins de 2 caractere
+        mots = [mot for mot in mots if len(mot) >= 2] 
+
+        
 
         # Rejoindre les mots sans stop words en une chaîne
         texte_propre = ' '.join(mots)

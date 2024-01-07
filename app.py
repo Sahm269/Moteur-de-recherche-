@@ -34,7 +34,7 @@ layout_accueil = html.Div([
             html.H3("Reddit"),
 
             html.Label("Thème Reddit"),
-            dcc.Input(id='theme_reddit_input', type='text', value='Football', placeholder='Entrez le thème Reddit'),
+            dcc.Input(id='theme_reddit_input', type='text', value='all', placeholder='Entrez le thème Reddit'),
         
             html.Label("Limite Reddit"),
             dcc.Slider(id='limit_reddit_input', min=1, max=100, step=1, value=10, marks={i: str(i) for i in range(0, 101, 10)}),
@@ -61,7 +61,7 @@ layout_accueil = html.Div([
             html.H3("Arxiv"),
 
             html.Label("Thème Arxiv"),
-            dcc.Input(id='theme_arxiv_input', type='text', value='foot', placeholder='Entrez le thème Arxiv'),
+            dcc.Input(id='theme_arxiv_input', type='text', value='clustering', placeholder='Entrez le thème Arxiv'),
         
             html.Label("Limite Arxiv"),
             dcc.Slider(id='limit_arxiv_input', min=1, max=100, step=1, value=10, marks={i: str(i) for i in range(0, 101, 10)}),
