@@ -1,0 +1,215 @@
+/* Ajoutez ce style dans un fichier CSS externe ou directement dans votre script Python */
+:root {
+    --color-1: #0d47a1; /* Couleur Principale */
+    --color-2: #242038; /* Fond Foncé */
+    --color-3: #273469; /* Accent 1 */
+    --color-4: #bbdefb ;/* Accent 2 */
+    --color-5: #e4d9ff; /* Fond Claire */
+    --color-6: #fafaff;
+    --gradient: linear-gradient(to right, var(--color-4), var(--color-1), var(--color-4), var(--color-5));
+
+  
+    --text-color: var(--color-4); /* Couleur de texte principale */
+    --font-family: 'Arial', sans-serif; /* Police principale */
+    --h1-font-size: 2.5em; /* Taille de police pour h1 */
+    --h2-font-size: 2em; /* Taille de police pour h2 */
+    --h3-font-size: 1.8em; /* Taille de police pour h3 */
+    --p-font-size: 1em; /* Taille de police pour les paragraphes */
+    --line-height: 1.5; /* Hauteur de ligne pour une meilleure lisibilité */
+  }
+  
+  
+  
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--gradient);
+}
+
+.container {
+    width: 70%;
+    min-height: 600px ;
+    margin: auto;
+    background: var(--color-6);
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6); /* Ajoute une ombre légère */
+}
+
+/* Ajoutez d'autres styles selon vos besoins */
+
+
+h1 {
+    color: var(--color-2);
+    text-align: center;
+}
+
+h2{
+
+}
+
+h3{
+    color: var(--color-3)
+}
+
+form {
+    /*background-color: #fff;*/
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.formulaire{
+    display: flex;
+    
+}
+
+.arxiv{
+
+
+}
+.reddit{
+    margin-right: 40px;
+
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+    color: var(--color-2);
+}
+
+.formulaire input {
+    width: 450px;
+    padding: 10px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    border: 3px solid var(--color-4);
+    border-radius: 5px;
+}
+.identifiant{
+    display:flex;
+    margin-top: 20px;
+
+}
+
+.identifiant input{
+    margin-right: 2px;
+    width: 150px;
+    margin-bottom: 30px;
+   
+}
+
+.arxiv button{
+ 
+    padding: 10px 15px;
+    margin-left: 270px;
+    margin-top: 40px;
+    
+}
+button {
+    background-color: var(--color-3);
+    color: #fff;
+    padding: 10px 15px;
+    margin-right: 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--color-2);
+}
+
+
+.slider {
+    width: 100%;
+}
+
+.result {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+}
+
+.link {
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #ee6c4d;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 0.3s ease; 
+
+    /* Ajout de l'effet de survol */
+    &:hover {
+        background-color: #b33c1e;
+    }
+}
+
+
+/* Styles pour le moteur de recherche */
+#search-container {
+    display: flex;
+    align-items: center;
+    max-width: 500px;
+    margin: auto;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#champ_recherche_cosinus {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 8px;
+    font-size: 16px;
+}
+
+#bouton_recherche_cosinus {
+    background: linear-gradient(to left, var(--color-4), var(--color-1), var(--color-4));
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 8px;
+    transition: transform 0.3s ease; /* Ajout de la transition */
+
+    /* Ajout de l'effet de flottement au survol */
+    &:hover {
+        transform: translateY(-3px);
+    }
+}
+
+/* Style pour l'icône de recherche (loupe) */
+#icone_recherche {
+    font-size: 20px;
+    margin-right: 8px;
+    color: #4285f4;
+}
+
+#output_recherche_cosinus{
+    width: 80%;
+    min-height: 600px ;
+    margin: auto;
+    margin-top: 20px;
+    background: var(--color-6);
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+   /* display: none;*/
+
+}

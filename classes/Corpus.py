@@ -60,12 +60,13 @@ class Corpus:
      # =============== 3.3 : SAVE ===============
     def save(self, filename='corpus.csv'):
         # Sauvegarder le corpus dans un fichier CSV
-        data = {'ID': [], 'Titre': [], 'Auteur': [], 'Date': [], 'Texte': [], 'Type' : []}
+        data = {'ID': [], 'Titre': [], 'Auteur': [], 'Date': [], 'URL':[], 'Texte': [], 'Type' : []}
         for doc_id, doc in self.id2doc.items():
             data['ID'].append(doc_id)
             data['Titre'].append(doc.titre)
             data['Auteur'].append(doc.auteur)
             data['Date'].append(doc.date)
+            data['URL'].append(doc.texte)
             data['Texte'].append(doc.texte)
             data['Type'].append(doc.type)
 
@@ -85,7 +86,7 @@ class Corpus:
         print(len(df))
 
         for i, row in df.iterrows():
-            doc = Document(row['Titre'], row['Auteur'], row['Date'], row['Texte'], row['Type'])
+            doc = Document(row['Titre'], row['Auteur'], row['Date'],row['URL'], row['Texte'],row['Type'])
             self.add(doc)
 
 
