@@ -2,30 +2,26 @@ import dash
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output, State
-import ipywidgets as widgets
-from IPython.display import display
-import ipywidgets as widgets
-
-
+import dash_core_components as dcc
 import praw
 from classes.Document import Document 
 from classes.Author import Author
 from classes.Corpus import Corpus
-from classes.Document import RedditDocument, ArxivDocument
 import datetime 
 import pandas as pd 
 import urllib.request
 import xmltodict
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+
 #=========================
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
 
-
-
-app = dash.Dash(__name__)
 
 mon_corpus = Corpus(nom="Corpus_article")
+
+
 # Première page (Page d'accueil)
 layout_accueil = html.Div([
     html.H1("Recuperer les Données"),
@@ -34,7 +30,7 @@ layout_accueil = html.Div([
             html.H3("Reddit"),
 
             html.Label("Thème Reddit"),
-            dcc.Input(id='theme_reddit_input', type='text', value='all', placeholder='Entrez le thème Reddit'),
+            dcc.Input(id='theme_reddit_input', type='text', value='football', placeholder='Entrez le thème Reddit'),
         
             html.Label("Limite Reddit"),
             dcc.Slider(id='limit_reddit_input', min=1, max=100, step=1, value=10, marks={i: str(i) for i in range(0, 101, 10)}),
@@ -61,12 +57,14 @@ layout_accueil = html.Div([
             html.H3("Arxiv"),
 
             html.Label("Thème Arxiv"),
-            dcc.Input(id='theme_arxiv_input', type='text', value='clustering', placeholder='Entrez le thème Arxiv'),
+            dcc.Input(id='theme_arxiv_input', type='text', value='foot', placeholder='Entrez le thème Arxiv'),
         
             html.Label("Limite Arxiv"),
             dcc.Slider(id='limit_arxiv_input', min=1, max=100, step=1, value=10, marks={i: str(i) for i in range(0, 101, 10)}),
-
-            html.Button(id='load_data_button', n_clicks=0, children='Recupérer les Données')
+            html.Div([ 
+                html.Button(id='save_corpus_button', n_clicks=0, children='Enregistrer le Corpus'),
+                 html.Button(id='load_data_button', n_clicks=0, children='Recupérer les Données')
+            ], className='btnsave' )
         
         ], className='arxiv'),
 
@@ -78,32 +76,63 @@ layout_accueil = html.Div([
     
     html.Button(id='show_corpus_button', n_clicks=0, children='Afficher le Corpus'),
     
-    html.Button(id='save_corpus_button', n_clicks=0, children='Enregistrer le Corpus'),
+    
     
     html.Button(id='open_corpus_button', n_clicks=0, children='Ouvrir le Corpus'),
 
     dcc.Link('Accéder au Moteur de recherche', href='/recherche', className="link"),
 
+
+    html.Div(id='result_output1'),
+    html.Div(id='result_output2'),
+    html.Div(id='result_output3'),
+
+
+
+
     # Ajoutez ce lien vers votre fichier CSS
     html.Link(rel='stylesheet', href='/assets/app.css')
 ], className='container')
 
-# Deuxième page (Formulaire de recherche)
+# Deuxième page (Moteur de recherche de recherche)
 layout_recherche = html.Div([
     html.H1("Moteur de recherche"),
     html.Div(id='search-container', children=[
         dcc.Input(id='champ_recherche_cosinus', type='text', value='', placeholder='Entrez vos mots-clés'),
+     
         html.Button(id='bouton_recherche_cosinus', n_clicks=0, children=[
             html.I(className='fas fa-search', id='icone_recherche'),
             'Rechercher'
         ]),
-
-    
     ]),
     
+    html.Div([
+           dcc.Dropdown(
+            id='source_selection',
+            options=[
+                {'label': 'Les deux', 'value': 'Les deux'},
+                {'label': 'Reddit', 'value': 'Reddit'},
+                {'label': 'Arxiv', 'value': 'Arxiv'},
+            ],
+            value='Les deux',
+            style={'width': '50%'}  # Ajustez la largeur selon vos préférences
+        ),
+    ]),
+
+    html.Div([
+    dcc.Dropdown(
+        id='dropdown_auteur',
+        options=[], 
+        multi=True,  # Permet à l'utilisateur de sélectionner plusieurs auteurs
+        placeholder='Sélectionnez un ou plusieurs auteurs',
+        style={'width': '50%'} 
+        ),
+    ]),
+
     html.Div(id='output_recherche_cosinus'),
-    dcc.Link('Retour à la page d\'accueil', href='/' ,className = 'link'),
+    dcc.Link('Retour à la page d\'accueil', href='/' ,className='link'),
 ])
+
 
 # Callback pour gérer les changements de page
 @app.callback(Output('page-content', 'children'),
@@ -114,15 +143,20 @@ def display_page(pathname):
     else:
         return layout_accueil
 
+
 # Callback pour effectuer la recherche
-
-@app.callback(Output('output_recherche_cosinus', 'children'),
-              [Input('bouton_recherche_cosinus', 'n_clicks')],
-              [State('champ_recherche_cosinus', 'value')])
-def effectuer_recherche_cosinus(n_clicks, mots_clefs_utilisateur):
+@app.callback(
+    Output('output_recherche_cosinus', 'children'),
+    [Input('bouton_recherche_cosinus', 'n_clicks')],
+    [State('champ_recherche_cosinus', 'value'),
+     State('source_selection', 'value')]
+)
+def effectuer_recherche_cosinus(n_clicks, mots_clefs_utilisateur, source_selectionnee):
     if n_clicks > 0:
+        
 
-        mon_corpus.load("corpus1.csv")
+        # Chargez le corpus combiné (corpus.csv)
+        mon_corpus.load("corpus.csv")
         mon_corpus.construire_mat_tfidf()
         vocab = mon_corpus.get_vocabulaire()
         vecteur_requete = np.zeros(len(vocab))
@@ -135,34 +169,41 @@ def effectuer_recherche_cosinus(n_clicks, mots_clefs_utilisateur):
 
         # Calcule la similarité
         mat_tfidf = mon_corpus.get_mattdidf()
-        similarites = cosine_similarity([vecteur_requete], mat_tfidf)
-
-        indices_tries = np.argsort(similarites[0])[::-1]
+        indices_tries = np.argsort(cosine_similarity([vecteur_requete], mat_tfidf)[0])[::-1]
         id2doc = mon_corpus.get_id2doc()
+
+        # Filtrer les résultats en fonction de la source sélectionnée
+        if source_selectionnee == 'Reddit':
+            indices_tries = [indice for indice in indices_tries if id2doc[indice + 1].type == 'Reddit']
+        elif source_selectionnee == 'Arxiv':
+            indices_tries = [indice for indice in indices_tries if id2doc[indice + 1].type == 'Arxiv']
+
+      
 
         # Construire le contenu HTML
         contenu_html = []
-        for i in range(10):
-            indice_document = indices_tries[i]
-            score_similarite = similarites[0, indice_document]
+        for indice_document in indices_tries:
+            score_similarite = cosine_similarity([vecteur_requete], mat_tfidf)[0, indice_document]
 
-            # Indexation
-            indice_document += 1
+            # Si le score de similarité est supérieur à zéro
+            if score_similarite > 0:
+                # Indexation
+                indice_document += 1
+                document = id2doc.get(indice_document)  # Utilise get pour éviter une KeyError
 
-            document = id2doc.get(indice_document)  # Utilisez get pour éviter une KeyError
+                if document:
+                    contenu_html.append(
+                        html.Div([
+                            html.P(f"Score de similarité avec le document {document.titre} : {score_similarite}"),
+                            html.A(document.url, href=document.url, target='_blank'),
+                            html.P(f"Contenu du document : {document.texte}"),
+                            html.P(f"Auteur : {document.auteur}"),
+                            html.P(f"Date : {document.date}"),
+                            html.P(f"Type : {document.type}"),
+                            html.Hr(),
+                        ])
+                    )
 
-            if document:
-                contenu_html.append(
-                    html.Div([
-                        html.P(f"Score de similarité avec le document {document.titre} : {score_similarite}"),
-                        html.A(document.url, href=document.url, target='_blank'),
-                        html.P(f"Contenu du document : {document.texte}"),
-                        html.P(f"Auteur : {document.auteur}"),
-                        html.P(f"Date : {document.date}"),
-                        html.P(f"Type : {document.type}"),
-                        html.Hr(),
-                    ])
-                )
 
         return dcc.Loading(
             id="loading-recherche-cosinus",
@@ -203,6 +244,7 @@ def load_data(n_clicks, theme_reddit, limit_reddit, idclient, secretclient, user
 
             doc_class = Document(titre, auteur, date, url, texte)
             collection.append(doc_class)
+            
             
     # ====================================================Partie Arxiv : 
     #==========================chargement des données Arxiv en instanciant un objet docyment
@@ -258,38 +300,42 @@ def load_data(n_clicks, theme_reddit, limit_reddit, idclient, secretclient, user
         return "" 
     
 
+
 # Callbacks pour les boutons du corpus
 @app.callback(Output('result_output1', 'children'),
-            [Input('show_corpus_button', 'n_clicks')])
+              [Input('show_corpus_button', 'n_clicks')])
 def show_corpus(n_clicks):
-    if n_clicks>0:
-        mon_corpus.show() 
+    if n_clicks > 0:
+        return repr(mon_corpus)
+       
+    else:
+        return None
+
         
-
-        # Logique pour afficher le corpus
-        # ...
-
-# Ajoutez des callbacks similaires pour 'save_corpus_button' et 'open_corpus_button'
+       
+# callbacks  pour 'save_corpus_button' et 'open_corpus_button'
 @app.callback(Output('result_output2', 'children'),
-            [Input('save_corpus_button', 'n_clicks')])
-def save_corpus(n_clicks, loaded_data):
-    if n_clicks>0 :
-        mon_corpus.save() 
-        
+              [Input('save_corpus_button', 'n_clicks')])
+def save_corpus(n_clicks):
+    if n_clicks > 0:
+        mon_corpus.save("corpus.csv")
+        return f"Le corpus a été enregistré avec succès."
+    else:
+        return None
 
-
-        # Logique pour enregistrer le corpus
-        # ...
 
 @app.callback(Output('result_output3', 'children'),
             [Input('open_corpus_button', 'n_clicks')])
-def open_corpus(n_clicks, loaded_data):
+def open_corpus(n_clicks):
     if n_clicks>0 :
-        mon_corpus.load("corpus1.csv") 
-        
+        mon_corpus.load("corpus.csv") 
+        return f"Le corpus a été ouvert avec succès."
+    
+    
+    
 
-        # Logique pour ouvrir le corpus
-        # ...
+
+
 
 
 
@@ -300,3 +346,5 @@ if __name__ == '__main__':
         html.Div(id='page-content'),
     ])
     app.run_server(debug=True)
+
+

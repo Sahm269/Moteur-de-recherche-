@@ -36,7 +36,7 @@ for doc in subr.controversial(limit=limit):
 #==========================chargement des données Arxiv en instanciant un objet docyment
 #textes_arxiv=[]
 query = "foot"
-url = 'http://export.arxiv.org/api/query?search_query=all:' + query + '&start=0&max_results=10'
+url = 'http://export.arxiv.org/api/query?search_query=all:' + query + '&start=0&max_results=100'
 url_read = urllib.request.urlopen(url).read()
 
 # url_read est un "byte stream" qui a besoin d'être décodé
@@ -160,7 +160,8 @@ mon_corpus.save("corpus.csv")
 mon_corpus.load('corpus.csv')
 print(repr(mon_corpus))
 
-
+mon_corpus.load('corpus.csv')
+mon_corpus.get_aut2id().items()
 #===================================================Test de notre singleton 
 #corpus1 = Corpus("Corpus1")
 #corpus2 = Corpus("Corpus2")
@@ -283,3 +284,6 @@ for i in range(top_n):
     print(f"Score de similarité avec le document {document.titre} : {score_similarite}")
     print(f"Contenu du document : {document.texte}")
     print("\n")
+
+
+    

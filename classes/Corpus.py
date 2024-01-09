@@ -7,19 +7,12 @@ import pandas as pd
 from collections import Counter
 import nltk
 from nltk.corpus import stopwords
+from nltk.stem import SnowballStemmer
+from sklearn.feature_extraction.text import TfidfVectorizer
+import string
 nltk.download('stopwords')
 # =============== 2.7 : CLASSE CORPUS ===============
 class Corpus:
-
-    _instance = None  # Variable de classe pour stocker l'instance unique
-
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super(Corpus, cls).__new__(cls)
-            # Initialisation du corpus uniquement si c'est la première instance
-            cls._instance.__init__(*args, **kwargs)
-        return cls._instance
-    
     def __init__(self, nom):
         # Attributs de la classe Corpus
         self.nom = nom  # Le nom du corpus
@@ -28,6 +21,7 @@ class Corpus:
         self.id2doc = {}  # Dictionnaire d'index des documents
         self.ndoc = 0  # Comptage des documents
         self.naut = 0  # Comptage des auteurs
+     
         # Attribut de classe pour stocker la chaîne construite
         Corpus.full_text = None
         # Dictionnaire pour stocker les informations sur le vocabulaire
@@ -37,11 +31,15 @@ class Corpus:
 
     def get_vocabulaire(self):
         return self.vocabulaire
+  
     def get_mattdidf(self):
         return self.mat_tfidf
     
     def get_id2doc(self):
         return self.id2doc
+    
+    def get_aut2id(self):
+        return self.aut2id
 
     def add(self, doc):
         # Ajouter un document au corpus
@@ -56,11 +54,11 @@ class Corpus:
         # Ajouter le document au corpus
         self.ndoc += 1
         self.id2doc[self.ndoc] = doc
-
+        
      # =============== 3.3 : SAVE ===============
     def save(self, filename='corpus.csv'):
         # Sauvegarder le corpus dans un fichier CSV
-        data = {'ID': [], 'Titre': [], 'Auteur': [], 'Date': [], 'URL':[], 'Texte': [], 'Type' : []}
+        data = {'ID': [], 'Titre': [], 'Auteur': [], 'Date': [], 'URL': [], 'Texte': [], 'Type': []}
         for doc_id, doc in self.id2doc.items():
             data['ID'].append(doc_id)
             data['Titre'].append(doc.titre)
@@ -70,15 +68,17 @@ class Corpus:
             data['Texte'].append(doc.texte)
             data['Type'].append(doc.type)
 
+
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
+
 
     # =============== 3.4 : LOAD ===============
     def load(self, filename='corpus.csv'):
         # Charger le corpus depuis un fichier CSV
         df = pd.read_csv(filename)
 
-        # Supprimer les doublons basés sur les colonnes spécifiées
+        # Supprimer les doublons basés sur les colpreproconnes spécifiées
         df = df.drop_duplicates(subset=['Titre', 'Auteur', 'Date','URL', 'Texte','Type'])
 
         # Supprimer les lignes avec un texte de moins de 200 caractères
@@ -127,7 +127,8 @@ class Corpus:
 
         for match in matches:
             for doc_id, document in self.id2doc.items():
-                if match.start() < len(document.texte):
+                if match.start() < len(document.texte
+                                       ):
                     debut_passage = max(0, match.start() - 50)
                     fin_passage = min(len(document.texte), match.end() + 50)
                     passage = document.texte[debut_passage:fin_passage]
@@ -138,6 +139,7 @@ class Corpus:
     # Méthode CONCORDE
     def concorde(self, keyword, context_size=50):
         data = {'contexte_gauche': [], 'motif_trouve': [], 'contexte_droit': []}
+
 
        # Vérifier si la chaîne a déjà été construite
         if Corpus.full_text is None:
@@ -163,11 +165,8 @@ class Corpus:
         return pd.DataFrame(data)
     
     # Méthode pour nettoyer le texte
-    @staticmethod
    # Import des modules nécessaires
-
-
-    def nettoyer_texte(texte):
+    def nettoyer_texte(self,texte):
         texte = str(texte)
         # Mise en minuscules
         texte = texte.lower()
@@ -197,6 +196,7 @@ class Corpus:
 
         # Rejoindre les mots sans stop words en une chaîne
         texte_propre = ' '.join(mots)
+
 
         return texte_propre
         
@@ -231,6 +231,21 @@ class Corpus:
 
         # Affichage des résultats
         print(df_freq.head(n_mots_frequents))
+        
+    #Methode stat auteur
+    def statistiques_auteur(self,nom_auteur):
+        if nom_auteur in self.aut2id:
+            id_auteur =  self.aut2id[nom_auteur]
+            auteur = self.authors[id_auteur]
+
+            nombre_documents = len(auteur.production)
+            taille_moyenne_documents = sum(len(doc) for doc in auteur.production) / nombre_documents
+
+            print(f"\nStatistiques pour l'auteur {nom_auteur}:")
+            print(f"Nombre de documents produits : {nombre_documents}")
+            print(f"Taille moyenne des documents : {taille_moyenne_documents:.2f} caractères\n")
+        else:
+            print(f"L'auteur {nom_auteur} n'est pas connu dans la collection.\n")
 
 
     #MATRICE TF
@@ -314,3 +329,4 @@ class Corpus:
 
 
         return self.mat_tfidf
+   
