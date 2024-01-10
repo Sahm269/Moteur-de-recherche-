@@ -7,9 +7,8 @@ import pandas as pd
 from collections import Counter
 import nltk
 from nltk.corpus import stopwords
-from nltk.stem import SnowballStemmer
-from sklearn.feature_extraction.text import TfidfVectorizer
-import string
+
+
 nltk.download('stopwords')
 # =============== 2.7 : CLASSE CORPUS ===============
 class Corpus:

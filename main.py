@@ -123,7 +123,7 @@ def statistiques_auteur():
         print(f"L'auteur {nom_auteur} n'est pas connu dans la collection.\n")
 
 # Appel de la fonction
-#statistiques_auteur()
+statistiques_auteur()
 
 
 ###=================================  Classe corpus   =======================

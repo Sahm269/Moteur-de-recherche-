@@ -57,7 +57,7 @@ layout_accueil = html.Div([
             html.H3("Arxiv"),
 
             html.Label("Thème Arxiv"),
-            dcc.Input(id='theme_arxiv_input', type='text', value='foot', placeholder='Entrez le thème Arxiv'),
+            dcc.Input(id='theme_arxiv_input', type='text', value='football', placeholder='Entrez le thème Arxiv'),
         
             html.Label("Limite Arxiv"),
             dcc.Slider(id='limit_arxiv_input', min=1, max=100, step=1, value=10, marks={i: str(i) for i in range(0, 101, 10)}),
@@ -181,7 +181,8 @@ def effectuer_recherche_cosinus(n_clicks, mots_clefs_utilisateur, source_selecti
       
 
         # Construire le contenu HTML
-        contenu_html = []
+        contenu_html = []  # Initialise la liste à l'extérieur de la boucle
+
         for indice_document in indices_tries:
             score_similarite = cosine_similarity([vecteur_requete], mat_tfidf)[0, indice_document]
 
@@ -192,17 +193,31 @@ def effectuer_recherche_cosinus(n_clicks, mots_clefs_utilisateur, source_selecti
                 document = id2doc.get(indice_document)  # Utilise get pour éviter une KeyError
 
                 if document:
-                    contenu_html.append(
-                        html.Div([
-                            html.P(f"Score de similarité avec le document {document.titre} : {score_similarite}"),
-                            html.A(document.url, href=document.url, target='_blank'),
-                            html.P(f"Contenu du document : {document.texte}"),
-                            html.P(f"Auteur : {document.auteur}"),
-                            html.P(f"Date : {document.date}"),
-                            html.P(f"Type : {document.type}"),
-                            html.Hr(),
-                        ])
-                    )
+                    # Colorier et mettre en gras les termes dans le contenu du document
+                    contenu_document = document.texte
+                    mots_clefs_propres = mots_clefs_propres.lower()
+
+                    for mot_clef in mots_clefs_propres.split():
+                        contenu_document = contenu_document.replace(
+                            mot_clef, f'<strong style="color: red;">{mot_clef}</strong>',1
+                        )
+
+                    # Utiliser dcc.Markdown pour interpréter le HTML dans le texte
+                    contenu_html_document = dcc.Markdown(contenu_document, dangerously_allow_html=True)
+
+                    # Créer un conteneur Dash pour le document et l'ajouter à la liste
+                    document_container = html.Div([
+                        html.P(f"Score de similarité avec le document {document.titre} : {score_similarite}"),
+                        html.A(document.url, href=document.url, target='_blank'),
+                        html.P("Contenu du document : "),
+                        contenu_html_document,
+                        html.P(f"Auteur : {document.auteur}"),
+                        html.P(f"Date : {document.date}"),
+                        html.P(f"Type : {document.type}"),
+                        html.Hr(),
+                    ])
+
+                    contenu_html.append(document_container)
 
 
         return dcc.Loading(
@@ -329,6 +344,7 @@ def save_corpus(n_clicks):
 def open_corpus(n_clicks):
     if n_clicks>0 :
         mon_corpus.load("corpus.csv") 
+
         return f"Le corpus a été ouvert avec succès."
     
     
