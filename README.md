@@ -1,36 +1,36 @@
 # Moteur-de-recherche-
 ## Bibliothèques utilisées
 ### Bibliothèques pour la construction de l'interface Dash
-import dash
-from dash import dcc
-from dash import html
-from dash.dependencies import Input, Output, State
-import dash_core_components as dcc
+- import dash
+- from dash import dcc
+- from dash import html
+- from dash.dependencies import Input, Output, State
+- import dash_core_components as dcc
 
 ### Bibliothèques pour la récupération de données
-import praw  # Pour Reddit
-import urllib.request
-import xmltodict  # Pour Arxiv
+- import praw  
+- import urllib.request
+- import xmltodict 
 
 ### Bibliothèques pour le traitement du texte et la similarité cosinus
-from sklearn.metrics.pairwise import cosine_similarity
-from scipy.sparse import lil_matrix, csr_matrix
-import numpy as np
-import re
-import pandas as pd
-from nltk.corpus import stopwords
-import ipywidgets as widgets
-from IPython.display import display
+- from sklearn.metrics.pairwise import cosine_similarity
+- from scipy.sparse import lil_matrix, csr_matrix
+- import numpy as np
+- import re
+- import pandas as pd
+- from nltk.corpus import stopwords
+- import ipywidgets as widgets
+- from IPython.display import display
 
 ### Classes personnalisées pour la modélisation des données
-from classes.Document import Document, RedditDocument, ArxivDocument
-from classes.Author import Author
-from classes.Corpus import Corpus
+- from classes.Document import Document, RedditDocument, ArxivDocument
+- from classes.Author import Author
+- from classes.Corpus import Corpus
 
 ### Autres bibliothèques
-import datetime
-from collections import Counter
-import nltk
+- import datetime
+- from collections import Counter
+- import nltk
 
 ## Organisation des dossiers
 Notre projet est structuré de manière claire et organisée, comprenant trois dossiers distincts et des fichiers racines définissant les points d'entrée principaux.
